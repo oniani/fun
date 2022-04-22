@@ -47,7 +47,10 @@ int main() {
 ## Build
 
 ```console
-$ clang++ -std=c++20 -O3 -ffast-math main.cpp -o main.out && ./main.out
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/clang.cmake -DCMAKE_BUILD_TYPE=Release ..
+$ cmake --build .
 ```
 
 ## References

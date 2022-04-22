@@ -2,7 +2,7 @@
 #include <array>
 #include <iostream>
 
-#include "fun.hpp"
+#include "include/fun.hpp"
 
 template <typename T>
 constexpr void print_vec(std::vector<T> xs) {
