@@ -104,14 +104,14 @@ namespace fun {
    * @param z Input value.
    * @return Value after activation via ReLU.
    */
-  [[nodiscard]] consteval auto relu(const arithmetic auto z) noexcept { return z < 0 ? 0 : z; }
+  [[nodiscard]] constexpr auto relu(const arithmetic auto z) noexcept { return z < 0 ? 0 : z; }
 
   /**
    * @brief Leaky ReLU activation function.
    * @param z Input value.
    * @return Value after activation via Leaky ReLU.
    */
-  [[nodiscard]] consteval auto leaky_relu(const arithmetic auto z) noexcept {
+  [[nodiscard]] constexpr auto leaky_relu(const arithmetic auto z) noexcept {
     return z < 0 ? 1e-2 * z : z;
   }
 
@@ -121,7 +121,7 @@ namespace fun {
    * @param a Scaling parameter.
    * @return Value after activation via Parametric ReLU.
    */
-  [[nodiscard]] consteval auto parametric_relu(const arithmetic auto z,
+  [[nodiscard]] constexpr auto parametric_relu(const arithmetic auto z,
                                                const arithmetic auto a) noexcept {
     return z < 0 ? a * z : z;
   }
@@ -132,7 +132,7 @@ namespace fun {
    * @return Value after activation via GELU.
    */
   [[nodiscard]] constexpr auto gelu(const arithmetic auto z) noexcept {
-    return 0.5 * z * (1 + tanh(0.797885 * z + 0.35677 * z * z * z));
+    return 0.5 * z * (1 + tanh(std::sqrt(2 / M_PI) * (z + 0.044715 * z * z * z)));
   }
 
   /**
@@ -149,7 +149,6 @@ namespace fun {
    * @return Value after activation via ELU.
    */
   [[nodiscard]] constexpr auto elu(const arithmetic auto z, const arithmetic auto a) noexcept {
-    // static_assert(!(a < 0));
     return z < 0 ? a * (std::exp(z) - 1) : z;
   }
 
@@ -180,14 +179,14 @@ namespace fun {
    * @param z Input value.
    * @return Value after activation via id.
    */
-  [[nodiscard]] consteval auto id(const arithmetic auto z) noexcept { return z; }
+  [[nodiscard]] constexpr auto id(const arithmetic auto z) noexcept { return z; }
 
   /**
    * @brief Binary step activation function.
    * @param z Input value.
    * @return Value after activation via binary step.
    */
-  [[nodiscard]] consteval auto binary_step(const arithmetic auto z) noexcept {
+  [[nodiscard]] constexpr auto binary_step(const arithmetic auto z) noexcept {
     return z < 0 ? 0 : 1;
   }
 
@@ -241,14 +240,14 @@ namespace fun {
      * @param z Input value.
      * @return ReLU derivative.
      */
-    [[nodiscard]] consteval auto relu(const arithmetic auto z) noexcept { return z < 0 ? 0 : 1; }
+    [[nodiscard]] constexpr auto relu(const arithmetic auto z) noexcept { return z < 0 ? 0 : 1; }
 
     /**
      * @brief Derivative of the Leaky ReLU activation function.
      * @param z Input value.
      * @return Leaky ReLU derivative.
      */
-    [[nodiscard]] consteval auto leaky_relu(const arithmetic auto z) noexcept {
+    [[nodiscard]] constexpr auto leaky_relu(const arithmetic auto z) noexcept {
       return z < 0 ? 1e-2 : 1;
     }
 
@@ -258,18 +257,20 @@ namespace fun {
      * @param a Scale parameter.
      * @return Parametric ReLU derivative.
      */
-    [[nodiscard]] consteval auto parametric_relu(const arithmetic auto z,
+    [[nodiscard]] constexpr auto parametric_relu(const arithmetic auto z,
                                                  const arithmetic auto a) noexcept {
       return z < 0 ? a : 1;
     }
 
-    /** TODO
+    /**
      * @brief Derivative of the GELU activation function.
      * @param z Input value.
      * @return GELU derivative.
      */
     [[nodiscard]] constexpr auto gelu(const arithmetic auto z) noexcept {
-      return 0.5 * z * (1 + tanh(0.797885 * z + 0.35677 * z * z * z));
+      auto cube = z * z * z;
+      auto tmp = 0.0356774 * cube + 0.797885 * z;
+      return 0.5 * tanh(tmp) + (0.0535161 * cube + 0.398942 * z) / std::cosh(tmp) + 0.5;
     }
 
     /**
@@ -288,7 +289,6 @@ namespace fun {
      * @return ELU derivative.
      */
     [[nodiscard]] constexpr auto elu(const arithmetic auto z, const arithmetic auto a) noexcept {
-      // static_assert(!(a < 0));
       return z < 0 ? a * std::exp(z) : 1;
     }
 
@@ -301,13 +301,16 @@ namespace fun {
       return fun::sigmoid(z);
     }
 
-    /** TODO
+    /**
      * @brief Derivative of the Mish activation function.
      * @param z Input value.
      * @return Mish derivative.
      */
     [[nodiscard]] constexpr auto mish(const arithmetic auto z) noexcept {
-      return z * tanh(softplus(z));
+      auto omega = std::exp(3 * z) + 4 * std::exp(2 * z) + (4 * z + 6) * std::exp(z) + 4 * (z + 1);
+      auto tmp = std::exp(z) + 1;
+      auto delta = tmp * tmp + 1;
+      return std::exp(z) * omega / (delta * delta);
     }
 
     // }}}
@@ -319,14 +322,14 @@ namespace fun {
      * @param z Input value.
      * @return Identity derivative.
      */
-    [[nodiscard]] consteval auto id([[maybe_unused]] const arithmetic auto z) noexcept { return 1; }
+    [[nodiscard]] constexpr auto id([[maybe_unused]] const arithmetic auto z) noexcept { return 1; }
 
     /**
      * @brief Derivative of the Binary Step activation function.
      * @param z Input value.
      * @return Binary Step derivative.
      */
-    [[nodiscard]] consteval auto binary_step([[maybe_unused]] const arithmetic auto z) noexcept {
+    [[nodiscard]] constexpr auto binary_step([[maybe_unused]] const arithmetic auto z) noexcept {
       return 0;
     }
 
