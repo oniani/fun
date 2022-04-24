@@ -13,31 +13,32 @@ project(
   LANGUAGES C CXX
 )
 
-option(BUILD_EXECUTABLE "Enable building an executable" ON)
-if(BUILD_EXECUTABLE)
-  message(STATUS "Building an executable...")
-  add_executable(${PROJECT_NAME} main.cpp)
-endif()
-
-option(TESTING "Enable testing" OFF)
-if(ENABLE_TESTING)
-  enable_testing()
-  message("Building tests...")
-  add_subdirectory(test)
-endif()
-
 if(NOT DEFINED COMPILER)
   set(COMPILER "clang")
 endif()
+string(TOLOWER ${COMPILER} COMPILER)
 
 if(${COMPILER} STREQUAL "clang")
-  message(STATUS "Using clang...")
+  message(STATUS "Compiler: clang libstdc++")
   include("cmake/toolchains/clang.cmake")
 elseif(${COMPILER} STREQUAL "gcc")
-  message(STATUS "Using gcc...")
+  message(STATUS "Compiler: gcc libstdc++")
   include("cmake/toolchains/gcc.cmake")
 else()
-  message(FATAL_ERROR "Unknown compiler")
+  message(FATAL_ERROR "Compiler: unknown")
 endif()
 
 include("cmake/tooling.cmake")
+
+option(BUILD_EXECUTABLE "Enable building an executable" ON)
+if(BUILD_EXECUTABLE)
+  message(STATUS "Building an executable")
+  add_executable(${PROJECT_NAME} main.cpp)
+endif()
+
+option(ENABLE_TESTING "Enable testing" ON)
+if(ENABLE_TESTING)
+  enable_testing()
+  message(STATUS "Building tests")
+  add_subdirectory(test)
+endif()

@@ -49,7 +49,7 @@ int main() {
 ```console
 $ mkdir build
 $ cd build
-$ cmake ake/toolchains/clang.cmake -DCMAKE_BUILD_TYPE=Release ..
+$ cmake -DCOMPILER=clang -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=VCPKG_TOOLCHAIN_FILE ..
 $ cmake --build .
 ```
 
