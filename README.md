@@ -55,11 +55,11 @@ $ cmake --build .
 
 ## References
 
-- [Activation function](https://en.wikipedia.org/wiki/Activation_function)
+- [Activation function][activationfunction]
 
 ## License
 
-[MIT License](LICENSE)
+[MIT License][license]
 
 [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function
 [softmax]: https://en.wikipedia.org/wiki/Softmax_function
@@ -76,3 +76,5 @@ $ cmake --build .
 [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_functions#Hyperbolic_tangent
 [gaussian]: https://en.wikipedia.org/wiki/Gaussian_function
 [growingcosineunit]: https://arxiv.org/abs/2108.12943
+[activationfunction]: https://en.wikipedia.org/wiki/Activation_function
+[license]: LICENSE
