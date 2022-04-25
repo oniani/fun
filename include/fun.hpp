@@ -32,8 +32,6 @@
 
 namespace fun {
 
-  // Concepts and types {{{
-
   /**
    * @brief Architecture-dependent size type used across the library.
    */
@@ -44,10 +42,6 @@ namespace fun {
    */
   template <typename T>
   concept arithmetic = std::is_arithmetic_v<T>;
-
-  // }}}
-
-  // Sigmoid and Related Activation Functions {{{
 
   /**
    * @brief Sigmoid activation function.
@@ -94,10 +88,6 @@ namespace fun {
 
     return result;
   }
-
-  // }}}
-
-  // ReLU and Related Activation Functions {{{
 
   /**
    * @brief Rectified Linear Unit (ReLU) activation function.
@@ -170,10 +160,6 @@ namespace fun {
     return z * tanh(softplus(z));
   }
 
-  // }}}
-
-  // Other Activation Functions {{{
-
   /**
    * @brief Identity activation function.
    * @param z Input value.
@@ -213,13 +199,7 @@ namespace fun {
    */
   [[nodiscard]] constexpr auto gcs(const arithmetic auto z) noexcept { return z * std::cos(z); }
 
-  // }}}
-
-  // Derivatives {{{
-
   namespace derivative {
-
-    // Sigmoid and Related Activation Functions {{{
 
     /**
      * @brief Derivative of the sigmoid activation function.
@@ -230,10 +210,6 @@ namespace fun {
       auto sigval = fun::sigmoid(z);
       return sigval * (1 - sigval);
     }
-
-    // }}}
-
-    // ReLU and Related Activation Functions {{{
 
     /**
      * @brief Derivative of the ReLU activation function.
@@ -313,10 +289,6 @@ namespace fun {
       return std::exp(z) * omega / (delta * delta);
     }
 
-    // }}}
-
-    // Other Activation Functions {{{
-
     /**
      * @brief Derivative of the Identity activation function.
      * @param z Input value.
@@ -361,11 +333,7 @@ namespace fun {
       return std::cos(z) - z * std::sin(z);
     }
 
-    // }}}
-
   }  // namespace derivative
-
-  // }}}
 
 }  // namespace fun
 
