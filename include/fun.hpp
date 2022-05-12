@@ -94,7 +94,9 @@ namespace fun {
    * @param z Input value.
    * @return Value after activation via ReLU.
    */
-  [[nodiscard]] constexpr auto relu(const arithmetic auto z) noexcept { return z < 0 ? 0 : z; }
+  [[nodiscard]] constexpr auto relu(const arithmetic auto z) noexcept {
+    return z < 0 ? 0 : z;
+  }
 
   /**
    * @brief Leaky ReLU activation function.
@@ -130,7 +132,9 @@ namespace fun {
    * @param z Input value.
    * @return Value after activation via SiLU.
    */
-  [[nodiscard]] constexpr auto silu(const arithmetic auto z) noexcept { return z * sigmoid(z); }
+  [[nodiscard]] constexpr auto silu(const arithmetic auto z) noexcept {
+    return z * sigmoid(z);
+  }
 
   /**
    * @brief Exponential Linear Units (ELU) activation function.
@@ -165,7 +169,9 @@ namespace fun {
    * @param z Input value.
    * @return Value after activation via id.
    */
-  [[nodiscard]] constexpr auto id(const arithmetic auto z) noexcept { return z; }
+  [[nodiscard]] constexpr auto id(const arithmetic auto z) noexcept {
+    return z;
+  }
 
   /**
    * @brief Binary step activation function.
@@ -181,7 +187,9 @@ namespace fun {
    * @param z Input value.
    * @return Value after activation via tanh.
    */
-  [[nodiscard]] constexpr auto tanh(const arithmetic auto z) noexcept { return std::tanh(z); }
+  [[nodiscard]] constexpr auto tanh(const arithmetic auto z) noexcept {
+    return std::tanh(z);
+  }
 
   /**
    * @brief Gaussian activation function.
@@ -197,7 +205,9 @@ namespace fun {
    * @param z Input value.
    * @return Value after activation via growing cosine unit.
    */
-  [[nodiscard]] constexpr auto gcs(const arithmetic auto z) noexcept { return z * std::cos(z); }
+  [[nodiscard]] constexpr auto gcs(const arithmetic auto z) noexcept {
+    return z * std::cos(z);
+  }
 
   namespace derivative {
 
@@ -216,7 +226,9 @@ namespace fun {
      * @param z Input value.
      * @return ReLU derivative.
      */
-    [[nodiscard]] constexpr auto relu(const arithmetic auto z) noexcept { return z < 0 ? 0 : 1; }
+    [[nodiscard]] constexpr auto relu(const arithmetic auto z) noexcept {
+      return z < 0 ? 0 : 1;
+    }
 
     /**
      * @brief Derivative of the Leaky ReLU activation function.
@@ -294,7 +306,9 @@ namespace fun {
      * @param z Input value.
      * @return Identity derivative.
      */
-    [[nodiscard]] constexpr auto id([[maybe_unused]] const arithmetic auto z) noexcept { return 1; }
+    [[nodiscard]] constexpr auto id([[maybe_unused]] const arithmetic auto z) noexcept {
+      return 1;
+    }
 
     /**
      * @brief Derivative of the Binary Step activation function.
