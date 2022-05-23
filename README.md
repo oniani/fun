@@ -1,6 +1,6 @@
 # fun
 
-A zero-dependency header-only activation function library in C++.
+A zero-dependency, header-only, compile-time, and stdlib-less activation function library.
 
 ## Supported Activation Functions
 

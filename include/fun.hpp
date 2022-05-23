@@ -30,45 +30,18 @@
 #include <numeric>
 #include <vector>
 
+#include "constexpr_ops.hpp"
+
 namespace fun {
-
-/**
- * @brief Architecture-dependent size type used across the library.
- */
-using size_type = std::size_t;
-
-/**
- * @brief Concept representing an arithmetic value (i.e., a number).
- */
-template <typename T>
-concept arithmetic = std::is_arithmetic_v<T>;
 
 /**
  * @brief Sigmoid activation function.
  * @param z Input value.
  * @return Value after activation via Sigmoid.
  */
-[[nodiscard]] constexpr auto sigmoid(const arithmetic auto z) noexcept {
-    auto expval = std::exp(z);
-    return z < 0 ? expval / (1 + expval) : 1 / (1 + std::exp(-z));
-}
-
-/**
- * @brief Softmax activation function.
- * @param z Input array.
- * @return Value after activation via Softmax.
- */
-template <arithmetic T, size_type N>
-[[nodiscard]] constexpr auto softmax(const std::array<T, N>& zs) noexcept {
-    auto acc = static_cast<T>(0);
-    auto expsum = std::accumulate(zs.begin(), zs.end(), acc, [](const auto& lhs, const auto& rhs) {
-        return lhs + std::exp(rhs);
-    });
-
-    std::array<T, N> result = zs;
-    std::for_each(result.begin(), result.end(), [&](auto& val) { val = std::exp(val) / expsum; });
-
-    return result;
+[[nodiscard]] constexpr auto sigmoid(const double z) noexcept {
+    auto expval = constexpr_ops::exp(z);
+    return z < 0 ? expval / (1 + expval) : 1 / (1 + constexpr_ops::exp(-z));
 }
 
 /**
@@ -76,15 +49,16 @@ template <arithmetic T, size_type N>
  * @param z Input vector.
  * @return Value after activation via Softmax.
  */
-template <arithmetic T>
-[[nodiscard]] constexpr auto softmax(const std::vector<T>& zs) noexcept {
+template <typename T>
+[[nodiscard]] constexpr auto softmax(const T& zs) noexcept {
     auto acc = static_cast<T>(0);
     auto expsum = std::accumulate(zs.begin(), zs.end(), acc, [](const auto& lhs, const auto& rhs) {
-        return lhs + std::exp(rhs);
+        return lhs + constexpr_ops::exp(rhs);
     });
 
     std::vector<T> result = zs;
-    std::for_each(result.begin(), result.end(), [&](auto& val) { val = std::exp(val) / expsum; });
+    std::for_each(result.begin(), result.end(),
+                  [&](auto& val) { val = constexpr_ops::exp(val) / expsum; });
 
     return result;
 }
@@ -94,7 +68,7 @@ template <arithmetic T>
  * @param z Input value.
  * @return Value after activation via ReLU.
  */
-[[nodiscard]] constexpr auto relu(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto relu(const double z) noexcept {
     return z < 0 ? 0 : z;
 }
 
@@ -103,7 +77,7 @@ template <arithmetic T>
  * @param z Input value.
  * @return Value after activation via Leaky ReLU.
  */
-[[nodiscard]] constexpr auto leaky_relu(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto leaky_relu(const double z) noexcept {
     return z < 0 ? 1e-2 * z : z;
 }
 
@@ -113,8 +87,7 @@ template <arithmetic T>
  * @param a Scaling parameter.
  * @return Value after activation via Parametric ReLU.
  */
-[[nodiscard]] constexpr auto parametric_relu(const arithmetic auto z,
-                                             const arithmetic auto a) noexcept {
+[[nodiscard]] constexpr auto parametric_relu(const double z, const double a) noexcept {
     return z < 0 ? a * z : z;
 }
 
@@ -123,8 +96,9 @@ template <arithmetic T>
  * @param z Input value.
  * @return Value after activation via GELU.
  */
-[[nodiscard]] constexpr auto gelu(const arithmetic auto z) noexcept {
-    return 0.5 * z * (1 + tanh(std::sqrt(2 / M_PI) * (z + 0.044715 * z * z * z)));
+[[nodiscard]] constexpr auto gelu(const double z) noexcept {
+    return 0.5 * z *
+           (1 + tanh(constexpr_ops::sqrt(2 / constexpr_ops::PI) * (z + 0.044715 * z * z * z)));
 }
 
 /**
@@ -132,7 +106,7 @@ template <arithmetic T>
  * @param z Input value.
  * @return Value after activation via SiLU.
  */
-[[nodiscard]] constexpr auto silu(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto silu(const double z) noexcept {
     return z * sigmoid(z);
 }
 
@@ -142,8 +116,8 @@ template <arithmetic T>
  * @param a Scale parameter.
  * @return Value after activation via ELU.
  */
-[[nodiscard]] constexpr auto elu(const arithmetic auto z, const arithmetic auto a) noexcept {
-    return z < 0 ? a * (std::exp(z) - 1) : z;
+[[nodiscard]] constexpr auto elu(const double z, const double a) noexcept {
+    return z < 0 ? a * (constexpr_ops::exp(z) - 1) : z;
 }
 
 /**
@@ -151,8 +125,8 @@ template <arithmetic T>
  * @param z Input value.
  * @return Value after activation via Softplus.
  */
-[[nodiscard]] constexpr auto softplus(const arithmetic auto z) noexcept {
-    return std::log(1 + std::exp(z));
+[[nodiscard]] constexpr auto softplus(const double z) noexcept {
+    return std::log(1 + constexpr_ops::exp(z));
 }
 
 /**
@@ -160,7 +134,7 @@ template <arithmetic T>
  * @param z Input value.
  * @return Value after activation via Mish.
  */
-[[nodiscard]] constexpr auto mish(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto mish(const double z) noexcept {
     return z * tanh(softplus(z));
 }
 
@@ -169,7 +143,7 @@ template <arithmetic T>
  * @param z Input value.
  * @return Value after activation via id.
  */
-[[nodiscard]] constexpr auto id(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto id(const double z) noexcept {
     return z;
 }
 
@@ -178,7 +152,7 @@ template <arithmetic T>
  * @param z Input value.
  * @return Value after activation via binary step.
  */
-[[nodiscard]] constexpr auto binary_step(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto binary_step(const double z) noexcept {
     return z < 0 ? 0 : 1;
 }
 
@@ -187,8 +161,8 @@ template <arithmetic T>
  * @param z Input value.
  * @return Value after activation via tanh.
  */
-[[nodiscard]] constexpr auto tanh(const arithmetic auto z) noexcept {
-    return std::tanh(z);
+[[nodiscard]] constexpr auto tanh(const double z) noexcept {
+    return constexpr_ops::tanh(z);
 }
 
 /**
@@ -196,8 +170,8 @@ template <arithmetic T>
  * @param z Input value.
  * @return Value after activation via gaussian.
  */
-[[nodiscard]] constexpr auto gaussian(const arithmetic auto z) noexcept {
-    return std::exp(-z * z);
+[[nodiscard]] constexpr auto gaussian(const double z) noexcept {
+    return constexpr_ops::exp(-z * z);
 }
 
 /**
@@ -205,8 +179,8 @@ template <arithmetic T>
  * @param z Input value.
  * @return Value after activation via growing cosine unit.
  */
-[[nodiscard]] constexpr auto gcs(const arithmetic auto z) noexcept {
-    return z * std::cos(z);
+[[nodiscard]] constexpr auto gcs(const double z) noexcept {
+    return z * constexpr_ops::cos(z);
 }
 
 namespace derivative {
@@ -216,7 +190,7 @@ namespace derivative {
  * @param z Input value.
  * @return Derivative of the sigmoid.
  */
-[[nodiscard]] constexpr auto sigmoid(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto sigmoid(const double z) noexcept {
     auto sigval = fun::sigmoid(z);
     return sigval * (1 - sigval);
 }
@@ -226,7 +200,7 @@ namespace derivative {
  * @param z Input value.
  * @return ReLU derivative.
  */
-[[nodiscard]] constexpr auto relu(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto relu(const double z) noexcept {
     return z < 0 ? 0 : 1;
 }
 
@@ -235,7 +209,7 @@ namespace derivative {
  * @param z Input value.
  * @return Leaky ReLU derivative.
  */
-[[nodiscard]] constexpr auto leaky_relu(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto leaky_relu(const double z) noexcept {
     return z < 0 ? 1e-2 : 1;
 }
 
@@ -245,8 +219,7 @@ namespace derivative {
  * @param a Scale parameter.
  * @return Parametric ReLU derivative.
  */
-[[nodiscard]] constexpr auto parametric_relu(const arithmetic auto z,
-                                             const arithmetic auto a) noexcept {
+[[nodiscard]] constexpr auto parametric_relu(const double z, const double a) noexcept {
     return z < 0 ? a : 1;
 }
 
@@ -255,10 +228,10 @@ namespace derivative {
  * @param z Input value.
  * @return GELU derivative.
  */
-[[nodiscard]] constexpr auto gelu(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto gelu(const double z) noexcept {
     auto cube = z * z * z;
     auto tmp = 0.0356774 * cube + 0.797885 * z;
-    return 0.5 * tanh(tmp) + (0.0535161 * cube + 0.398942 * z) / std::cosh(tmp) + 0.5;
+    return 0.5 * tanh(tmp) + (0.0535161 * cube + 0.398942 * z) / constexpr_ops::cosh(tmp) + 0.5;
 }
 
 /**
@@ -266,7 +239,7 @@ namespace derivative {
  * @param z Input value.
  * @return SiLU derivative.
  */
-[[nodiscard]] constexpr auto silu(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto silu(const double z) noexcept {
     return fun::sigmoid(z) + z * fun::derivative::sigmoid(z);
 }
 
@@ -276,8 +249,8 @@ namespace derivative {
  * @param a Scale parameter.
  * @return ELU derivative.
  */
-[[nodiscard]] constexpr auto elu(const arithmetic auto z, const arithmetic auto a) noexcept {
-    return z < 0 ? a * std::exp(z) : 1;
+[[nodiscard]] constexpr auto elu(const double z, const double a) noexcept {
+    return z < 0 ? a * constexpr_ops::exp(z) : 1;
 }
 
 /**
@@ -285,7 +258,7 @@ namespace derivative {
  * @param z Input value.
  * @return Softplus derivative.
  */
-[[nodiscard]] constexpr auto softplus(const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto softplus(const double z) noexcept {
     return fun::sigmoid(z);
 }
 
@@ -294,11 +267,12 @@ namespace derivative {
  * @param z Input value.
  * @return Mish derivative.
  */
-[[nodiscard]] constexpr auto mish(const arithmetic auto z) noexcept {
-    auto omega = std::exp(3 * z) + 4 * std::exp(2 * z) + (4 * z + 6) * std::exp(z) + 4 * (z + 1);
-    auto tmp = std::exp(z) + 1;
+[[nodiscard]] constexpr auto mish(const double z) noexcept {
+    auto omega = constexpr_ops::exp(3 * z) + 4 * constexpr_ops::exp(2 * z) +
+                 (4 * z + 6) * constexpr_ops::exp(z) + 4 * (z + 1);
+    auto tmp = constexpr_ops::exp(z) + 1;
     auto delta = tmp * tmp + 1;
-    return std::exp(z) * omega / (delta * delta);
+    return constexpr_ops::exp(z) * omega / (delta * delta);
 }
 
 /**
@@ -306,7 +280,7 @@ namespace derivative {
  * @param z Input value.
  * @return Identity derivative.
  */
-[[nodiscard]] constexpr auto id([[maybe_unused]] const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto id([[maybe_unused]] const double z) noexcept {
     return 1;
 }
 
@@ -315,7 +289,7 @@ namespace derivative {
  * @param z Input value.
  * @return Binary Step derivative.
  */
-[[nodiscard]] constexpr auto binary_step([[maybe_unused]] const arithmetic auto z) noexcept {
+[[nodiscard]] constexpr auto binary_step([[maybe_unused]] const double z) noexcept {
     return 0;
 }
 
@@ -324,8 +298,8 @@ namespace derivative {
  * @param z Input value.
  * @return tanh derivative.
  */
-[[nodiscard]] constexpr auto tanh(const arithmetic auto z) noexcept {
-    auto val = fun::derivative::tanh(z);
+[[nodiscard]] constexpr auto tanh(const double z) noexcept {
+    auto val = fun::tanh(z);
     return 1 - val * val;
 }
 
@@ -334,8 +308,8 @@ namespace derivative {
  * @param z Input value.
  * @return Gaussian derivative.
  */
-[[nodiscard]] constexpr auto gaussian(const arithmetic auto z) noexcept {
-    return -2 * z * std::exp(-z * z);
+[[nodiscard]] constexpr auto gaussian(const double z) noexcept {
+    return -2 * z * constexpr_ops::exp(-z * z);
 }
 
 /**
@@ -343,8 +317,8 @@ namespace derivative {
  * @param z Input value.
  * @return GCS derivative.
  */
-[[nodiscard]] constexpr auto gcs(const arithmetic auto z) noexcept {
-    return std::cos(z) - z * std::sin(z);
+[[nodiscard]] constexpr auto gcs(const double z) noexcept {
+    return constexpr_ops::cos(z) - z * constexpr_ops::sin(z);
 }
 
 }  // namespace derivative
