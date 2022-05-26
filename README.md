@@ -1,6 +1,6 @@
 # fun
 
-A zero-dependency, header-only, compile-time, and stdlib-less activation function library.
+A compile-time stdlib-less activation function library.
 
 ## Supported Activation Functions
 

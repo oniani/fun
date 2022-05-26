@@ -126,7 +126,7 @@ template <typename T>
  * @return Value after activation via Softplus.
  */
 [[nodiscard]] constexpr auto softplus(const double z) noexcept {
-    return std::log(1 + constexpr_ops::exp(z));
+    return constexpr_ops::ln(1 + constexpr_ops::exp(z));
 }
 
 /**
