@@ -66,7 +66,7 @@ $ cmake --build .
 [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
 [leakyrelu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Leaky_ReLU
 [parametricrelu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Parametric_ReLUQ
-[gelu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Gaussian_Error_Linear_Unit_(GELU)
+[gelu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Gaussian-error_linear_unit_(GELU)
 [silu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#SiLU
 [elu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#ELU
 [softplus]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)#Softplus
